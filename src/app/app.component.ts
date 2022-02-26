@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ApplicationInsights, SeverityLevel } from '@microsoft/applicationinsights-web';
+import { ActivatedRouteSnapshot, ResolveEnd, Router } from '@angular/router';
+import { MonitoringService } from './monitoring.service';
+import { filter } from "rxjs/operators";
 
 @Component({
   selector: 'app-root',
@@ -9,20 +11,31 @@ import { ApplicationInsights, SeverityLevel } from '@microsoft/applicationinsigh
 export class AppComponent implements OnInit {
   title = 'AngularAppInsightsDemo';
 
-  constructor(private appInsights: ApplicationInsights) { }
+  constructor(private monitoringService: MonitoringService,
+    private router: Router) { }
 
   ngOnInit() {
-    this.appInsights.loadAppInsights();
+    this.router.events
+      .pipe(filter((event): event is ResolveEnd => event instanceof ResolveEnd))
+      .subscribe((event) => {
+        const activatedComponent = this.getActivatedComponent(event.state.root);
+        if (activatedComponent) {
+          this.monitoringService.logPageView(activatedComponent.id, event.url);
+        }
+      });
 
-    this.appInsights.trackTrace({
-      message: 'App initialised at ' + new Date().toString(),
-      severityLevel: SeverityLevel.Information
-    });
+    this.monitoringService.logInfo('App initialised at ' + new Date().toString());
 
-    this.appInsights.trackException({
-      error: new Error('My bug-free app throws an error'),
-    });
+    this.monitoringService.logError(new Error('My bug-free app throws an error'));
 
     throw new Error('An unhandled exception never happens, really.');
+  }
+
+  private getActivatedComponent(snapshot: ActivatedRouteSnapshot): any {
+    if (snapshot.firstChild) {
+      return this.getActivatedComponent(snapshot.firstChild);
+    }
+
+    return snapshot.component;
   }
 }

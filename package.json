@@ -20,7 +20,7 @@
     "@angular/platform-browser": "~8.2.7",
     "@angular/platform-browser-dynamic": "~8.2.7",
     "@angular/router": "~8.2.7",
-    "@microsoft/applicationinsights-web": "^2.2.2",
+    "@microsoft/applicationinsights-web": "2.7.3",
     "core-js": "^2.5.4",
     "rxjs": "~6.5.3",
     "tslib": "^1.9.0",

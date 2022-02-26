@@ -1,13 +1,10 @@
 import { ErrorHandler, Injectable, Injector } from '@angular/core';
-import { ApplicationInsights } from '@microsoft/applicationinsights-web';
-
+import { MonitoringService } from './monitoring.service';
 @Injectable()
 export class GlobalErrorHandler implements ErrorHandler {
-
     constructor(private injector: Injector) { }
-
     handleError(error: Error) {
-        const appInsights = this.injector.get(ApplicationInsights);
-        appInsights.trackException({ exception: error });
+        const monitoringService = this.injector.get(MonitoringService);
+        monitoringService.logError(error);
     }
 }

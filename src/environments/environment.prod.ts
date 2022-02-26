@@ -1,3 +1,5 @@
 export const environment = {
-  production: true
+  id: 'Production',
+  production: true,
+  appInsightsKey: 'INSTRUMENTATION_KEY'
 };
